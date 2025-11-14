@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -12,8 +13,6 @@ import android.net.NetworkCapabilities;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -33,16 +32,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 import fr.bmartel.speedtest.SpeedTestReport;
-import fr.bmartel.speedtest.SpeedTestSocket;
-import fr.bmartel.speedtest.inter.ISpeedTestListener;
 import fr.bmartel.speedtest.model.SpeedTestError;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements SpeedTestManager.SpeedTestListener {
 
     private static final String TAG = "HomeActivity";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -52,22 +47,17 @@ public class HomeActivity extends AppCompatActivity {
     private ListView wifiListView;
     private BroadcastReceiver wifiScanReceiver;
 
-    private TextView downloadSpeedValueTextView;
-    private TextView uploadSpeedValueTextView;
+    private TextView downloadSpeedValueMbpsTextView;
+    private TextView downloadSpeedValueMbsTextView;
+    private TextView uploadSpeedValueMbpsTextView;
+    private TextView uploadSpeedValueMbsTextView;
     private TextView networkStatusTextView;
     private Button analyzeButton;
     private ProgressBar speedTestProgressBar;
+    private BottomNavigationView bottomNavigationView;
 
-    private SpeedTestSocket speedTestSocket;
-    private final Handler handler = new Handler(Looper.getMainLooper());
-
-    private final List<SpeedTestServer> servers = Arrays.asList(
-            new SpeedTestServer("OVH", "http://proof.ovh.net/files/10Mio.dat", "http://proof.ovh.net/", 1000000),
-            new SpeedTestServer("Tele2", "http://speedtest.tele2.net/10MB.zip", "http://speedtest.tele2.net/", 10000000),
-            new SpeedTestServer("Hetzner", "http://speed.hetzner.de/100MB.bin", "http://speed.hetzner.de/", 10000000)
-    );
-    private final Random random = new Random();
-
+    private SpeedTestManager speedTestManager;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,123 +69,23 @@ public class HomeActivity extends AppCompatActivity {
         analyzeButton = findViewById(R.id.btn_analyze);
         wifiListView = findViewById(R.id.wifi_list);
         networkStatusTextView = findViewById(R.id.network_status_text);
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav);
-        downloadSpeedValueTextView = findViewById(R.id.download_speed_value);
-        uploadSpeedValueTextView = findViewById(R.id.upload_speed_value);
+        bottomNavigationView = findViewById(R.id.bottom_nav);
+        downloadSpeedValueMbpsTextView = findViewById(R.id.download_speed_value_mbps);
+        downloadSpeedValueMbsTextView = findViewById(R.id.download_speed_value_mbs);
+        uploadSpeedValueMbpsTextView = findViewById(R.id.upload_speed_value_mbps);
+        uploadSpeedValueMbsTextView = findViewById(R.id.upload_speed_value_mbs);
         speedTestProgressBar = findViewById(R.id.speed_test_progress);
 
         // --- Initialize Managers ---
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         connectivityManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        speedTestSocket = new SpeedTestSocket();
+        speedTestManager = new SpeedTestManager();
+        sharedPreferences = getSharedPreferences("theme_prefs", MODE_PRIVATE);
 
         // --- Setup Listeners ---
         analyzeButton.setOnClickListener(v -> runSpeedTest());
         setupNavigation(bottomNavigationView);
         setupWifiScanReceiver();
-
-        // --- Initial UI Update ---
-        updateNetworkStatusUI();
-    }
-
-    private void runSpeedTest() {
-        updateNetworkStatusUI();
-
-        if (!analyzeButton.isEnabled()) {
-            Toast.makeText(this, "No internet connection.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Reset UI
-        downloadSpeedValueTextView.setText(R.string.speed_value_placeholder);
-        uploadSpeedValueTextView.setText(R.string.speed_value_placeholder);
-        speedTestProgressBar.setIndeterminate(true);
-        speedTestProgressBar.setVisibility(View.VISIBLE);
-
-        SpeedTestServer server = getRandomServer();
-        Toast.makeText(this, "Starting speed test on " + server.getName() + "...", Toast.LENGTH_SHORT).show();
-
-        startDownloadTest(server);
-    }
-
-    private void startDownloadTest(SpeedTestServer server) {
-        new Thread(() -> {
-            speedTestSocket.clearListeners();
-            speedTestSocket.addSpeedTestListener(new ISpeedTestListener() {
-                @Override
-                public void onCompletion(SpeedTestReport report) {
-                    handler.post(() -> {
-                        updateSpeedUI(report, downloadSpeedValueTextView);
-                        // Download is complete, now start the upload test
-                        startUploadTest(server);
-                    });
-                }
-
-                @Override
-                public void onProgress(float percent, SpeedTestReport report) {
-                    handler.post(() -> {
-                        updateSpeedUI(report, downloadSpeedValueTextView);
-                        speedTestProgressBar.setIndeterminate(false);
-                        speedTestProgressBar.setProgress((int) percent);
-                    });
-                }
-
-                @Override
-                public void onError(SpeedTestError speedTestError, String errorMessage) {
-                    handler.post(() -> {
-                        Log.e(TAG, "Download error: " + errorMessage);
-                        speedTestProgressBar.setVisibility(View.GONE);
-                        Toast.makeText(HomeActivity.this, "Download failed: " + errorMessage, Toast.LENGTH_SHORT).show();
-                    });
-                }
-            });
-            speedTestSocket.startDownload(server.getDownloadUrl());
-        }).start();
-    }
-
-    private void startUploadTest(SpeedTestServer server) {
-        new Thread(() -> {
-            speedTestSocket.clearListeners();
-            speedTestSocket.addSpeedTestListener(new ISpeedTestListener() {
-                @Override
-                public void onCompletion(SpeedTestReport report) {
-                    handler.post(() -> {
-                        updateSpeedUI(report, uploadSpeedValueTextView);
-                        speedTestProgressBar.setVisibility(View.GONE);
-                        Toast.makeText(HomeActivity.this, "Test complete!", Toast.LENGTH_SHORT).show();
-                    });
-                }
-
-                @Override
-                public void onProgress(float percent, SpeedTestReport report) {
-                    handler.post(() -> {
-                        updateSpeedUI(report, uploadSpeedValueTextView);
-                        speedTestProgressBar.setIndeterminate(false);
-                        speedTestProgressBar.setProgress((int) percent);
-                    });
-                }
-
-                @Override
-                public void onError(SpeedTestError speedTestError, String errorMessage) {
-                    handler.post(() -> {
-                        speedTestProgressBar.setVisibility(View.GONE);
-                        Toast.makeText(HomeActivity.this, "Upload failed: " + errorMessage, Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "Upload error: " + errorMessage);
-                    });
-                }
-            });
-            speedTestSocket.startUpload(server.getUploadUrl(), server.getUploadSize());
-        }).start();
-    }
-
-    private void updateSpeedUI(SpeedTestReport report, TextView speedValueTextView) {
-        BigDecimal speedBps = report.getTransferRateBit();
-        BigDecimal speedMbps = speedBps.divide(new BigDecimal(1000000), 2, RoundingMode.HALF_UP);
-        speedValueTextView.setText(speedMbps.toPlainString());
-    }
-
-    private SpeedTestServer getRandomServer() {
-        return servers.get(random.nextInt(servers.size()));
     }
 
     @Override
@@ -203,6 +93,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
         updateNetworkStatusUI();
         registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        bottomNavigationView.setSelectedItemId(R.id.nav_home);
     }
 
     @Override
@@ -210,6 +101,94 @@ public class HomeActivity extends AppCompatActivity {
         super.onPause();
         unregisterReceiver(wifiScanReceiver);
     }
+
+    private void runSpeedTest() {
+        if (!analyzeButton.isEnabled()) {
+            Toast.makeText(this, "No internet connection.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Reset UI
+        downloadSpeedValueMbpsTextView.setText(R.string.speed_value_placeholder);
+        downloadSpeedValueMbsTextView.setText(R.string.speed_value_placeholder);
+        uploadSpeedValueMbpsTextView.setText(R.string.speed_value_placeholder);
+        uploadSpeedValueMbsTextView.setText(R.string.speed_value_placeholder);
+        speedTestProgressBar.setIndeterminate(true);
+        speedTestProgressBar.setVisibility(View.VISIBLE);
+
+        speedTestManager.startTest(this);
+    }
+
+    private void updateSpeedUI(SpeedTestReport report, boolean isDownload) {
+        String units = sharedPreferences.getString("speed_units", "Default");
+        BigDecimal speedBps = report.getTransferRateBit();
+
+        BigDecimal speedMbps = speedBps.divide(new BigDecimal(1000000), 2, RoundingMode.HALF_UP);
+        BigDecimal speedMbs = speedBps.divide(new BigDecimal(8000000), 2, RoundingMode.HALF_UP);
+
+        String formattedMbps = speedMbps.toPlainString() + " Mbps";
+        String formattedMbs = speedMbs.toPlainString() + " MB/s";
+
+        TextView mbpsView = isDownload ? downloadSpeedValueMbpsTextView : uploadSpeedValueMbpsTextView;
+        TextView mbsView = isDownload ? downloadSpeedValueMbsTextView : uploadSpeedValueMbsTextView;
+
+        switch (units) {
+            case "Default":
+                mbpsView.setText(formattedMbps);
+                mbsView.setText(formattedMbs);
+                mbpsView.setVisibility(View.VISIBLE);
+                mbsView.setVisibility(View.VISIBLE);
+                break;
+            case "Mbps":
+                mbpsView.setText(formattedMbps);
+                mbpsView.setVisibility(View.VISIBLE);
+                mbsView.setVisibility(View.GONE);
+                break;
+            case "MB/s":
+                mbsView.setText(formattedMbs);
+                mbsView.setVisibility(View.VISIBLE);
+                mbpsView.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    // --- SpeedTestListener Implementation ---
+
+    @Override
+    public void onDownloadProgress(float percent, SpeedTestReport report) {
+        updateSpeedUI(report, true);
+        speedTestProgressBar.setIndeterminate(false);
+        speedTestProgressBar.setProgress((int) percent);
+    }
+
+    @Override
+    public void onDownloadComplete(SpeedTestReport report) {
+        updateSpeedUI(report, true);
+        speedTestProgressBar.setIndeterminate(true); // Prepare for upload
+    }
+
+    @Override
+    public void onUploadProgress(float percent, SpeedTestReport report) {
+        updateSpeedUI(report, false);
+        speedTestProgressBar.setIndeterminate(false);
+        speedTestProgressBar.setProgress((int) percent);
+    }
+
+    @Override
+    public void onUploadComplete(SpeedTestReport report) {
+        updateSpeedUI(report, false);
+        speedTestProgressBar.setVisibility(View.GONE);
+        Toast.makeText(HomeActivity.this, "Test complete!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onTestFailed(SpeedTestError error, String message) {
+        speedTestProgressBar.setVisibility(View.GONE);
+        Toast.makeText(HomeActivity.this, message, Toast.LENGTH_SHORT).show();
+        Log.e(TAG, message);
+    }
+
+    // --- The rest of HomeActivity remains the same ---
 
     private void setupWifiScanReceiver() {
         wifiScanReceiver = new BroadcastReceiver() {
@@ -315,37 +294,6 @@ public class HomeActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Location permission is required to scan for Wi-Fi networks.", Toast.LENGTH_LONG).show();
             }
-        }
-    }
-
-    // Helper class for Speed Test Server
-    private static class SpeedTestServer {
-        private final String name;
-        private final String downloadUrl;
-        private final String uploadUrl;
-        private final int uploadSize;
-
-        public SpeedTestServer(String name, String downloadUrl, String uploadUrl, int uploadSize) {
-            this.name = name;
-            this.downloadUrl = downloadUrl;
-            this.uploadUrl = uploadUrl;
-            this.uploadSize = uploadSize;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getDownloadUrl() {
-            return downloadUrl;
-        }
-
-        public String getUploadUrl() {
-            return uploadUrl;
-        }
-
-        public int getUploadSize() {
-            return uploadSize;
         }
     }
 }

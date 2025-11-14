@@ -8,6 +8,7 @@ material = "1.13.0"
 activity = "1.11.0"
 constraintlayout = "2.1.4"
 core-splashscreen = "1.0.1"
+speed-test-lib = "1.32.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -18,6 +19,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
+speed-test = { group = "com.github.bertrandmartel", name = "speed-test-lib", version.ref = "speed-test-lib" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

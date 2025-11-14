@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -68,7 +69,6 @@ public class ToolsActivity extends AppCompatActivity {
         signalStrengthDescriptionText = findViewById(R.id.signal_strength_description_text);
 
         // --- Setup Navigation ---
-        bottomNavigationView.setSelectedItemId(R.id.nav_tools);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
@@ -99,6 +99,8 @@ public class ToolsActivity extends AppCompatActivity {
         super.onResume();
         // Start updating signal strength when the activity is resumed
         signalStrengthHandler.post(signalStrengthRunnable);
+        // Set the correct navigation item when returning to the activity
+        bottomNavigationView.setSelectedItemId(R.id.nav_tools);
     }
 
     @Override

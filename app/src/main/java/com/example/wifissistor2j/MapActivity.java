@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -52,7 +53,6 @@ public class MapActivity extends AppCompatActivity {
         radarButton = findViewById(R.id.radar_button);
 
         // --- Setup Navigation ---
-        bottomNavigationView.setSelectedItemId(R.id.nav_map);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_map) {
@@ -103,6 +103,8 @@ public class MapActivity extends AppCompatActivity {
         if (isRadarRunning) {
             startRadar();
         }
+        // Set the correct navigation item when returning to the activity
+        bottomNavigationView.setSelectedItemId(R.id.nav_map);
     }
 
     @Override

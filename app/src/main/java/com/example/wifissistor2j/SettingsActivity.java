@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.RadioGroup;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -13,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class SettingsActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,8 +22,7 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         sharedPreferences = getSharedPreferences("theme_prefs", MODE_PRIVATE);
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav);
-        bottomNavigationView.setSelectedItemId(R.id.nav_settings);
+        bottomNavigationView = findViewById(R.id.bottom_nav);
 
         // Theme settings
         RadioGroup themeRadioGroup = findViewById(R.id.theme_radio_group);
@@ -84,5 +85,12 @@ public class SettingsActivity extends AppCompatActivity {
             }
             return false;
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set the correct navigation item when returning to the activity
+        bottomNavigationView.setSelectedItemId(R.id.nav_settings);
     }
 }

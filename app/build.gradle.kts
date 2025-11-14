@@ -39,7 +39,7 @@ dependencies {
     implementation(libs.core.splashscreen)
 
     // Speed Test Library
-    implementation("com.github.bertrandmartel:speed-test-lib:1.32.1")
+    implementation(libs.speed.test)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
