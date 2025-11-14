@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Tele2",
+    "downloadUrl": "http://speedtest.tele2.net/100MB.zip",
+    "uploadUrl": "http://speedtest.tele2.net/"
+  },
+  {
+    "name": "Hanging Server",
+    "downloadUrl": "http://10.255.255.1/100MB.zip",
+    "uploadUrl": "http://10.255.255.1/"
+  },
+  {
+    "name": "Hetzner",
+    "downloadUrl": "http://speed.hetzner.de/100MB.bin",
+    "uploadUrl": "http://speed.hetzner.de/"
+  }
+]

@@ -13,6 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class SettingsActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,8 +21,7 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         sharedPreferences = getSharedPreferences("theme_prefs", MODE_PRIVATE);
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav);
-        bottomNavigationView.setSelectedItemId(R.id.nav_settings);
+        bottomNavigationView = findViewById(R.id.bottom_nav);
 
         // Theme settings
         RadioGroup themeRadioGroup = findViewById(R.id.theme_radio_group);
@@ -66,23 +66,37 @@ public class SettingsActivity extends AppCompatActivity {
             sharedPreferences.edit().putString("speed_units", units).apply();
         });
 
+        setupNavigation();
+    }
+
+    private void setupNavigation() {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
-            if (itemId == R.id.nav_home) {
-                Intent intent = new Intent(SettingsActivity.this, HomeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(intent);
-                return true;
-            } else if (itemId == R.id.nav_tools) {
-                startActivity(new Intent(SettingsActivity.this, ToolsActivity.class));
-                return true;
-            } else if (itemId == R.id.nav_map) {
-                startActivity(new Intent(SettingsActivity.this, MapActivity.class));
-                return true;
-            } else if (itemId == R.id.nav_settings) {
-                return true;
+            if (itemId == R.id.nav_settings) {
+                return true; // Already on this screen
             }
-            return false;
+
+            Intent intent;
+            if (itemId == R.id.nav_home) {
+                intent = new Intent(this, HomeActivity.class);
+            } else if (itemId == R.id.nav_tools) {
+                intent = new Intent(this, ToolsActivity.class);
+            } else if (itemId == R.id.nav_map) {
+                intent = new Intent(this, MapActivity.class);
+            } else {
+                return false; // Should not happen
+            }
+
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            return true;
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set the correct navigation item when returning to the activity
+        bottomNavigationView.setSelectedItemId(R.id.nav_settings);
     }
 }

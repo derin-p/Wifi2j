@@ -1,13 +1,14 @@
 [versions]
-agp = "8.9.3"
+agp = "8.13.1"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 appcompat = "1.7.1"
 material = "1.13.0"
-activity = "1.11.0"
-constraintlayout = "2.1.4"
-core-splashscreen = "1.0.1"
+activity = "1.12.0"
+constraintlayout = "2.2.1"
+core-splashscreen = "1.2.0"
+speed-test-lib = "1.32.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -18,7 +19,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
+speed-test = { group = "com.github.bertrandmartel", name = "speed-test-lib", version.ref = "speed-test-lib" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-

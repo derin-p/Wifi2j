@@ -19,7 +19,7 @@
     <string name="enable_wifi_to_play">Enable Wi-Fi to play</string>
     <string name="wifi_signal_finder">Wi-Fi Signal Finder</string>
     <string name="initial_dbm_value">- dBm</string>
-    <string name="searching">Searching...</string>
+    <string name="searching">Searching…</string>
     <string name="title_home">Home</string>
     <string name="title_tools">Tools</string>
     <string name="title_map">Map</string>
@@ -39,11 +39,11 @@
     <string name="gateway_label">Gateway:</string>
     <string name="subnet_mask_label">Subnet Mask:</string>
     <string name="dns_server_label">DNS Server:</string>
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading…</string>
     <string name="ping_tool">Ping Tool</string>
     <string name="ping_hint">Website (e.g., google.com)</string>
     <string name="ping_button">Ping</string>
-    <string name="ping_result_placeholder"></string>
+    <string name="ping_result_placeholder" />
     <string name="signal_strength">Signal Strength</string>
     <string name="theme_title">Theme</string>
     <string name="theme_light">Light</string>
@@ -53,4 +53,32 @@
     <string name="units_default">Default (Show both)</string>
     <string name="units_mbps">Mbps (Megabits per second)</string>
     <string name="units_mbs">MB/s (Megabytes per second)</string>
+    <string name="suggestion_weak_signal">Your Wi-Fi speed might be low due to a weak signal. Use the Signal Finder to locate a better spot for your device.</string>
+
+    <!-- Strings for ToolsActivity -->
+    <string name="tools_not_connected_to_wifi">Not connected to Wi-Fi</string>
+    <string name="tools_info_na">N/A</string>
+    <string name="tools_ping_empty_host_toast">Please enter a website to ping</string>
+    <string name="tools_pinging">Pinging %1$s…</string>
+    <string name="tools_ping_success">Success from %1$s in %2$dms</string>
+    <string name="tools_ping_failed">Failed: Host not reachable</string>
+    <string name="tools_ping_error">Error: %1$s</string>
+
+    <string name="signal_strength_perfect">Perfect signal</string>
+    <string name="signal_strength_excellent">Excellent signal</string>
+    <string name="signal_strength_very_good">Very good signal</string>
+    <string name="signal_strength_okay">Okay signal</string>
+    <string name="signal_strength_poor">Poor signal</string>
+    <string name="signal_strength_very_poor">Very poor signal</string>
+
+    <!-- Strings for HomeActivity -->
+    <string name="home_stop_analysis">Stop Analysis</string>
+    <string name="home_analyze_again">Analyze Again</string>
+    <string name="home_test_cancelled">Test cancelled</string>
+    <string name="home_no_internet">No internet connection.</string>
+    <string name="home_permission_required">Location permission is required to scan for Wi-Fi networks.</string>
+    <string name="speed_format_mbps">%.2f Mbps</string>
+    <string name="speed_format_mbs">%.2f MB/s</string>
+    <string name="suggestion_close_button_description">Close suggestion</string>
+
 </resources>

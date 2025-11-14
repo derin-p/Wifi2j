@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId = "com.example.wifissistor2j"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -39,7 +39,7 @@ dependencies {
     implementation(libs.core.splashscreen)
 
     // Speed Test Library
-    implementation("com.github.bertrandmartel:speed-test-lib:1.32.1")
+    implementation(libs.speed.test)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

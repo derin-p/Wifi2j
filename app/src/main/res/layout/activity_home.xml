@@ -35,43 +35,47 @@
                 android:textSize="18sp"
                 app:layout_constraintVertical_chainStyle="packed"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/download_speed_view"
+                app:layout_constraintBottom_toTopOf="@id/download_speed_view_layout"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline"
-                android:layout_marginTop="60dp"/>
+                android:layout_marginTop="48dp"/>
 
             <LinearLayout
-                android:id="@+id/download_speed_view"
+                android:id="@+id/download_speed_view_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
                 app:layout_constraintTop_toBottomOf="@id/download_label"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline"
-                android:layout_marginBottom="60dp">
+                android:layout_marginBottom="48dp">
 
                 <TextView
-                    android:id="@+id/download_speed_value"
+                    android:id="@+id/download_speed_value_mbps"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/speed_value_placeholder"
                     android:textStyle="bold"
-                    android:maxLines="1"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="24sp"
-                    app:autoSizeMaxTextSize="48sp"
-                    app:autoSizeStepGranularity="2sp"
-                    tools:text="100.00" />
+                    android:textSize="24sp"
+                    tools:text="100.00 Mbps" />
 
-                <TextView
-                    android:id="@+id/download_speed_unit"
+                 <TextView
+                    android:id="@+id/download_speed_value_mbs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="@string/speed_unit"
-                    android:textSize="18sp" />
+                    android:textStyle="bold"
+                    android:textSize="24sp"
+                    tools:text="12.50 MB/s" />
+
+                <TextView
+                    android:id="@+id/download_speed_quality_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    tools:text="Excellent" />
+
             </LinearLayout>
 
             <View
@@ -91,56 +95,103 @@
                 android:textSize="18sp"
                 app:layout_constraintVertical_chainStyle="packed"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/upload_speed_view"
+                app:layout_constraintBottom_toTopOf="@id/upload_speed_view_layout"
                 app:layout_constraintStart_toEndOf="@id/guideline"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="60dp"/>
+                android:layout_marginTop="48dp"/>
 
             <LinearLayout
-                android:id="@+id/upload_speed_view"
+                android:id="@+id/upload_speed_view_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
                 app:layout_constraintTop_toBottomOf="@id/upload_label"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/guideline"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginBottom="60dp">
+                android:layout_marginBottom="48dp">
 
                 <TextView
-                    android:id="@+id/upload_speed_value"
+                    android:id="@+id/upload_speed_value_mbps"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/speed_value_placeholder"
                     android:textStyle="bold"
-                    android:maxLines="1"
-                    app:autoSizeTextType="uniform"
-                    app:autoSizeMinTextSize="24sp"
-                    app:autoSizeMaxTextSize="48sp"
-                    app:autoSizeStepGranularity="2sp"
-                    tools:text="100.00" />
+                    android:textSize="24sp"
+                    tools:text="100.00 Mbps" />
 
-                <TextView
-                    android:id="@+id/upload_speed_unit"
+                 <TextView
+                    android:id="@+id/upload_speed_value_mbs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="@string/speed_unit"
-                    android:textSize="18sp" />
+                    android:textStyle="bold"
+                    android:textSize="24sp"
+                    tools:text="12.50 MB/s" />
+
+                <TextView
+                    android:id="@+id/upload_speed_quality_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    tools:text="Excellent" />
+
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/suggestion_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        app:cardCornerRadius="12dp"
+        app:layout_constraintTop_toBottomOf="@id/status_card"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/suggestion_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/suggestion_weak_signal"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/suggestion_close_button"/>
+
+            <ImageButton
+                android:id="@+id/suggestion_close_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:contentDescription="@string/suggestion_close_button_description"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
     <TextView
         android:id="@+id/network_status_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/status_card"
+        app:layout_constraintTop_toBottomOf="@id/suggestion_card"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="Connected via: Wi-Fi" />
